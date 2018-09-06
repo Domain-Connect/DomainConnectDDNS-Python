@@ -3,7 +3,7 @@ import os.path
 import sys
 
 import requests
-from domainconnect import DomainConnect
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials
 from builtins import input
 
 dc = DomainConnect()
@@ -44,7 +44,7 @@ def main(domain, settings='settings.txt'):
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
-    
+
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
 
     tries = 1
@@ -53,6 +53,13 @@ def main(domain, settings='settings.txt'):
         code = input("Access code cannot be empty. Please retry: ")
     if not code:
         return "Could not setup domain without an access code."
+
+    context.code = code
+    context = dc.get_async_token(context, DomainConnectAsyncCredentials(
+        client_id='domainconnect.org',
+        client_secret='inconceivable',
+        api_url=config.urlAPI
+    ))
 
     # store domain settings
     mode = 'r+'
@@ -69,7 +76,10 @@ def main(domain, settings='settings.txt'):
             domain: {
                 'provider_name': config.providerName,
                 'url_api': config.urlAPI,
-                'code': code
+                'access_token': context.access_token,
+                'refresh_token': context.refresh_token,
+                'iat': context.iat,
+                'access_token_expires_in': context.access_token_expires_in
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
