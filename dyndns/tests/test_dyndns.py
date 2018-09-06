@@ -1,12 +1,11 @@
+from __future__ import print_function
 import json
-
 import os
-from unittest.mock import patch
 
 from domainconnect import DomainConnect
 from unittest2 import TestCase, skip
 
-from build.lib.dyndns import domain_setup, domain_update
+from dyndns import domain_setup, domain_update
 
 
 class TestDomainDynDNS(TestCase):
@@ -23,8 +22,8 @@ class TestDomainDynDNS(TestCase):
             os.remove('settings.txt')
 
     def _setup_domain(self, domain, code):
-        with patch('builtins.input', side_effect=code):
-            domain_setup.main(domain)
+        print("Input: " + str(code))
+        domain_setup.main(domain)
 
     def test_setup_one_domain(self):
         code = 'test-code'

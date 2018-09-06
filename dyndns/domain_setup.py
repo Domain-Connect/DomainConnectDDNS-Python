@@ -1,14 +1,15 @@
 import json
 import os.path
-from json import JSONDecodeError
+import sys
 
 import requests
 from domainconnect import DomainConnect
+from builtins import input
 
 dc = DomainConnect()
 
 
-def main(domain):
+def main(domain, settings='settings.txt'):
     # get Domain Connect config
     try:
         config = dc.get_domain_config(domain)
@@ -55,12 +56,12 @@ def main(domain):
 
     # store domain settings
     mode = 'r+'
-    if not os.path.exists("settings.txt"):
+    if not os.path.exists(settings):
         mode = 'w+'
-    with open("settings.txt", mode) as settings_file:
+    with open(settings, mode) as settings_file:
         try:
             existing_config = json.load(settings_file)
-        except JSONDecodeError:
+        except ValueError:
             existing_config = {}
         settings_file.seek(0)
         settings_file.truncate()

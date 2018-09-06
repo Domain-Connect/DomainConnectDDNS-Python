@@ -1,7 +1,6 @@
+from __future__ import print_function
 import json
 import time
-import urllib.parse
-from json import JSONDecodeError
 
 import dns.resolver
 import requests
@@ -10,13 +9,13 @@ from domainconnect import DomainConnect, DomainConnectException, DomainConnectAs
 dc = DomainConnect()
 
 
-def main(domain):
+def main(domain, settings='settings.txt'):
     # get local settings for domain
     try:
-        with open("settings.txt", "r") as settings_file:
+        with open(settings, "r") as settings_file:
             try:
                 config = json.load(settings_file)
-            except JSONDecodeError:
+            except ValueError:
                 config = {}
     except IOError:
         return "Couldn't read domain setttings."
@@ -108,7 +107,7 @@ def main(domain):
         print(e)
 
     # update settings
-    with open("settings.txt", "w") as settings_file:
+    with open(settings, "w") as settings_file:
         json.dump(config, settings_file, sort_keys=True, indent=1)
 
     if success:
