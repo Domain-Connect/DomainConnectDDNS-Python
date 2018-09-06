@@ -90,14 +90,11 @@ def main(domain, settings='settings.txt'):
         ))
         for field in ['access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
             config[domain].update({field: getattr(context, field)})
-        if 'code' in config[domain]:
-            del config[domain]['code']
 
         dc.apply_domain_connect_template_async(
             context,
             service_id='dynamicdns',
-            params={'IP': public_ip},
-            force=True
+            params={'IP': public_ip}
         )
         config[domain]['last_success'] = int(time.time())
         config[domain]['ip'] = public_ip
