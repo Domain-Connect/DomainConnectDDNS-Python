@@ -10,6 +10,7 @@ Positional arguments:
 - domain --- full name domain to keep up to date
 
 Optional arguments:
+- --config CONFIG --- config file path
 - -h --- display help and exit
 
 
