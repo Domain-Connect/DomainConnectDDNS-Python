@@ -16,4 +16,4 @@ Optional arguments:
 Installation
 ============
 
-`python setup.py install`
+`pip install domain-connect-dyndns`
