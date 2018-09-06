@@ -25,6 +25,7 @@ def main(domain, settings='settings.txt'):
     for field in ['provider_name', 'url_api']:
         if field not in config[domain]:
             return "Domain {} configured incorectly. Rerun setup.".format(domain)
+    print("Read {} config.".format(domain))
 
     # read existing ip for domain
     ip = None
