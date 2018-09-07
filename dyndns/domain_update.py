@@ -27,16 +27,21 @@ def main(domain, settings='settings.txt'):
             return "Domain {} configured incorectly. Rerun setup.".format(domain)
     print("Read {} config.".format(domain))
 
-    # read existing ip for domain
+    # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
     ip = None
-    try:
-        answers = dns.resolver.query(domain, 'A')
-        if not answers:
-            return "No A record found for domain {}".format(domain)
-        ip = answers[0]
-        print("IP {} found in A record".format(ip))
-    except Exception:
-        print("No A record found for domain {}".format(domain))
+    if 'last_success' in config[domain] and int(time.time()) - config[domain]['last_success'] < 60:
+        ip = config[domain]['ip']
+        print("Recently used IP {}".format(ip))
+    else:
+        try:
+            answers = dns.resolver.query(domain, 'A')
+            if not answers:
+                return "No A record found for domain {}".format(domain)
+            ip = answers[0]
+            print("IP {} found in A record".format(ip))
+            config[domain]['last_dns_check'] = int(time.time())
+        except Exception:
+            print("No A record found for domain {}".format(domain))
 
     # get public ip
     response = requests.get("https://api.ipify.org", params={'format': 'json'})
@@ -45,8 +50,6 @@ def main(domain, settings='settings.txt'):
     public_ip = response.json().get('ip', None)
     if not public_ip:
         return "Could not discover public IP."
-
-    config[domain]['last_dns_check'] = int(time.time())
 
     print("New IP: {}".format(public_ip))
     if ip and str(ip) == str(public_ip):
