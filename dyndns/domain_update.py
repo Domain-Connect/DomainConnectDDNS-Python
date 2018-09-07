@@ -27,7 +27,7 @@ def main(domain, settings='settings.txt'):
             return "Domain {} configured incorectly. Rerun setup.".format(domain)
     print("Read {} config.".format(domain))
 
-    # read existing ip for domain from config || from DNS if last check was less than 3600 ago
+    # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
     ip = None
     if 'last_success' in config[domain] and int(time.time()) - config[domain]['last_success'] < 60:
         ip = config[domain]['ip']
