@@ -1,16 +1,15 @@
 import datetime
 import json
 import time
-from json import JSONDecodeError
 
 
-def main(domain):
+def main(domain, settings='settings.txt'):
     # get local settings for domain
     try:
-        with open("settings.txt", "r") as settings_file:
+        with open(settings, "r") as settings_file:
             try:
                 config = json.load(settings_file)
-            except JSONDecodeError:
+            except ValueError:
                 config = {}
     except IOError:
         return "Couldn't read domain setttings."

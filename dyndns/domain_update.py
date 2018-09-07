@@ -1,7 +1,6 @@
+from __future__ import print_function
 import json
 import time
-import urllib.parse
-from json import JSONDecodeError
 
 import dns.resolver
 import requests
@@ -10,13 +9,13 @@ from domainconnect import DomainConnect, DomainConnectException, DomainConnectAs
 dc = DomainConnect()
 
 
-def main(domain):
+def main(domain, settings='settings.txt'):
     # get local settings for domain
     try:
-        with open("settings.txt", "r") as settings_file:
+        with open(settings, "r") as settings_file:
             try:
                 config = json.load(settings_file)
-            except JSONDecodeError:
+            except ValueError:
                 config = {}
     except IOError:
         return "Couldn't read domain setttings."
@@ -26,6 +25,7 @@ def main(domain):
     for field in ['provider_name', 'url_api']:
         if field not in config[domain]:
             return "Domain {} configured incorectly. Rerun setup.".format(domain)
+    print("Read {} config.".format(domain))
 
     # read existing ip for domain
     ip = None
@@ -91,14 +91,11 @@ def main(domain):
         ))
         for field in ['access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
             config[domain].update({field: getattr(context, field)})
-        if 'code' in config[domain]:
-            del config[domain]['code']
 
         dc.apply_domain_connect_template_async(
             context,
             service_id='dynamicdns',
-            params={'IP': public_ip},
-            force=True
+            params={'IP': public_ip}
         )
         config[domain]['last_success'] = int(time.time())
         config[domain]['ip'] = public_ip
@@ -108,7 +105,7 @@ def main(domain):
         print(e)
 
     # update settings
-    with open("settings.txt", "w") as settings_file:
+    with open(settings, "w") as settings_file:
         json.dump(config, settings_file, sort_keys=True, indent=1)
 
     if success:

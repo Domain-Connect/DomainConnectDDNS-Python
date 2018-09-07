@@ -1,14 +1,15 @@
 import json
 import os.path
-from json import JSONDecodeError
+import sys
 
 import requests
-from domainconnect import DomainConnect
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials
+from builtins import input
 
 dc = DomainConnect()
 
 
-def main(domain):
+def main(domain, settings='settings.txt'):
     # get Domain Connect config
     try:
         config = dc.get_domain_config(domain)
@@ -43,7 +44,7 @@ def main(domain):
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
-    
+
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
 
     tries = 1
@@ -53,14 +54,21 @@ def main(domain):
     if not code:
         return "Could not setup domain without an access code."
 
+    context.code = code
+    context = dc.get_async_token(context, DomainConnectAsyncCredentials(
+        client_id='domainconnect.org',
+        client_secret='inconceivable',
+        api_url=config.urlAPI
+    ))
+
     # store domain settings
     mode = 'r+'
-    if not os.path.exists("settings.txt"):
+    if not os.path.exists(settings):
         mode = 'w+'
-    with open("settings.txt", mode) as settings_file:
+    with open(settings, mode) as settings_file:
         try:
             existing_config = json.load(settings_file)
-        except JSONDecodeError:
+        except ValueError:
             existing_config = {}
         settings_file.seek(0)
         settings_file.truncate()
@@ -68,7 +76,10 @@ def main(domain):
             domain: {
                 'provider_name': config.providerName,
                 'url_api': config.urlAPI,
-                'code': code
+                'access_token': context.access_token,
+                'refresh_token': context.refresh_token,
+                'iat': context.iat,
+                'access_token_expires_in': context.access_token_expires_in
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
