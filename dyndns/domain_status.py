@@ -31,4 +31,7 @@ def main(domain, settings='settings.txt'):
     if 'last_attempt' in config[domain]:
         info['Last DNS failed update'] = datetime.datetime.fromtimestamp(config[domain]['last_attempt']) \
             .strftime("%d %B %Y %H:%M")
+    if 'force' in config[domain]:
+        info['Override?'] = 'Any existing A records are overridden' if config[domain]['force'] else \
+            'No A records will be overridden'
     return '\n'.join(['{}: {}'.format(key, info[key]) for key in sorted(info.keys())])

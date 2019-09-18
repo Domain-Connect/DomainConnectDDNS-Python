@@ -98,7 +98,8 @@ def main(domain, settings='settings.txt'):
         dc.apply_domain_connect_template_async(
             context,
             service_id='dynamicdns',
-            params={'IP': public_ip}
+            params={'IP': public_ip},
+            force=config[domain].get('force', False)
         )
         config[domain]['last_success'] = int(time.time())
         config[domain]['ip'] = public_ip
@@ -112,5 +113,5 @@ def main(domain, settings='settings.txt'):
         json.dump(config, settings_file, sort_keys=True, indent=1)
 
     if success:
-        return "DNS record succesfully updated."
+        return "DNS record successfully updated."
     return "Could not update DNS record."

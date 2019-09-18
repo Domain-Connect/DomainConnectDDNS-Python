@@ -1,10 +1,13 @@
 import json
 import os.path
-import sys
+
+from builtins import input
 
 import requests
-from domainconnect import DomainConnect, DomainConnectAsyncCredentials
-from builtins import input
+from domainconnect import (
+    DomainConnect, DomainConnectAsyncCredentials,
+    NoDomainConnectRecordException, NoDomainConnectSettingsException
+)
 
 dc = DomainConnect()
 
@@ -61,6 +64,8 @@ def main(domain, settings='settings.txt'):
         api_url=config.urlAPI
     ))
 
+    force = input("Should we override any existing A records in the DNS zone (y/n)?") == 'y'
+
     # store domain settings
     mode = 'r+'
     if not os.path.exists(settings):
@@ -79,7 +84,8 @@ def main(domain, settings='settings.txt'):
                 'access_token': context.access_token,
                 'refresh_token': context.refresh_token,
                 'iat': context.iat,
-                'access_token_expires_in': context.access_token_expires_in
+                'access_token_expires_in': context.access_token_expires_in,
+                'force': force
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
