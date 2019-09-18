@@ -14,7 +14,7 @@ class TestDomainDynDNS(TestCase):
         self.host = 'andreea.'
         self.domain = 'livius.co'
         self.expected_settings_keys = [
-            'access_token_expires_in', 'access_token', 'url_api', 'iat', 'provider_name', 'refresh_token'
+            'access_token_expires_in', 'access_token', 'url_api', 'iat', 'provider_name', 'refresh_token', 'force'
         ]
 
     def tearDown(self):
