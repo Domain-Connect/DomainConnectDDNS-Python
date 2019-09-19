@@ -17,12 +17,6 @@ def main(domain, settings='settings.txt'):
     except NoDomainConnectRecordException or NoDomainConnectSettingsException:
         return "Domain doesn't support Domain Connect."
 
-    # check Dynamic DNS template supported
-    check_url = config.urlAPI + "/v2/domainTemplates/providers/domainconnect.org/services/dynamicdns"
-    response = requests.get(check_url)
-    if response.status_code != 200:
-        return "DNS Provider does not support Dynamic DNS Template."
-
     # form consent url
     params = {
         'IP': '0.0.0.0'

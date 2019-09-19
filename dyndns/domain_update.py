@@ -68,7 +68,6 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                 provider_id='domainconnect.org',
                 service_id_in_path=True,
                 service_id='dynamicdns',
-                params=params,
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         else:
@@ -76,7 +75,6 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                 domain=domain,
                 provider_id='domainconnect.org',
                 service_id=['dynamicdns',],
-                params=params,
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         for field in ['code', 'access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
