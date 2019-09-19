@@ -9,7 +9,7 @@ from domainconnect import DomainConnect, DomainConnectException, DomainConnectAs
 dc = DomainConnect()
 
 
-def main(domain, settings='settings.txt'):
+def main(domain, settings='settings.txt', ignore_previous_ip=False):
     # get local settings for domain
     try:
         with open(settings, "r") as settings_file:
@@ -52,7 +52,7 @@ def main(domain, settings='settings.txt'):
         return "Could not discover public IP."
 
     print("New IP: {}".format(public_ip))
-    if ip and str(ip) == str(public_ip):
+    if not ignore_previous_ip and ip and str(ip) == str(public_ip):
         config[domain]['ip'] = public_ip
         # update settings
         with open("settings.txt", "w") as settings_file:
@@ -60,10 +60,6 @@ def main(domain, settings='settings.txt'):
         return "A record up to date."
 
     # update A record
-    params = {
-        'client_id': 'domainconnect.org',
-        'scope': 'dynamicdns'
-    }
     success = True
     try:
         if config[domain]['provider_name'].lower() in ['godaddy', 'secureserver']:
@@ -72,7 +68,6 @@ def main(domain, settings='settings.txt'):
                 provider_id='domainconnect.org',
                 service_id_in_path=True,
                 service_id='dynamicdns',
-                params=params,
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         else:
@@ -80,7 +75,6 @@ def main(domain, settings='settings.txt'):
                 domain=domain,
                 provider_id='domainconnect.org',
                 service_id=['dynamicdns',],
-                params=params,
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         for field in ['code', 'access_token', 'refresh_token', 'iat', 'access_token_expires_in']:

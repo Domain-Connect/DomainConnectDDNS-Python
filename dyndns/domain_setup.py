@@ -5,6 +5,7 @@ import sys
 import requests
 from domainconnect import DomainConnect, DomainConnectAsyncCredentials
 from builtins import input
+import webbrowser
 
 dc = DomainConnect()
 
@@ -16,16 +17,9 @@ def main(domain, settings='settings.txt'):
     except NoDomainConnectRecordException or NoDomainConnectSettingsException:
         return "Domain doesn't support Domain Connect."
 
-    # check Dynamic DNS template supported
-    check_url = config.urlAPI + "/v2/domainTemplates/providers/domainconnect.org/services/dynamicdns"
-    response = requests.get(check_url)
-    if response.status_code != 200:
-        return "DNS Provider does not support Dynamic DNS Template."
-
     # form consent url
     params = {
-        'client_id': 'domainconnect.org',
-        'scope': 'dynamicdns'
+        'IP': '0.0.0.0'
     }
     if config.providerName.lower() in ['godaddy', 'secureserver']:
         context = dc.get_domain_connect_template_async_context(
@@ -45,6 +39,7 @@ def main(domain, settings='settings.txt'):
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
 
+    webbrowser.open(context.asyncConsentUrl, autoraise=True)
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
 
     tries = 1

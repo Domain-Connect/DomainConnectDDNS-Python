@@ -12,6 +12,8 @@ def main():
 
     parser.add_argument('action', choices=['setup', 'update', 'status'], help="action to be performed on domain(s)")
     parser.add_argument('--config', type=str, default='settings.txt', help="config file path")
+    parser.add_argument('--ignore-previous-ip', action='store_true', dest='ignore_previous_ip',
+                        help="Update the IP even if no change detected. Don't use on regular update!")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--domain', type=str, help="domain to keep up to date")
@@ -23,6 +25,7 @@ def main():
     domain = args.domain
     all = args.all
     settings = args.config
+    ignore_previous_ip = args.ignore_previous_ip
 
     # validate domain
     if domain and not validators.domain(domain) is True:
@@ -31,6 +34,10 @@ def main():
 
     if all and action == 'setup':
         print("Bulk setup not supported")
+        return
+
+    if ignore_previous_ip and action != 'update':
+        print("--ignore-previous-ip only valid with update action")
         return
 
     domains = []
@@ -51,6 +58,6 @@ def main():
         if action == 'setup':
             print(domain_setup.main(domain, settings))
         elif action == 'update':
-            print(domain_update.main(domain, settings))
+            print(domain_update.main(domain, settings, ignore_previous_ip))
         elif action == 'status':
             print(domain_status.main(domain, settings))
