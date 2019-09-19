@@ -24,8 +24,7 @@ def main(domain, settings='settings.txt'):
 
     # form consent url
     params = {
-        'client_id': 'domainconnect.org',
-        'scope': 'dynamicdns'
+        'IP': '0.0.0.0'
     }
     if config.providerName.lower() in ['godaddy', 'secureserver']:
         context = dc.get_domain_connect_template_async_context(
