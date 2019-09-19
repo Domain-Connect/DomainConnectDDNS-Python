@@ -5,6 +5,7 @@ import sys
 import requests
 from domainconnect import DomainConnect, DomainConnectAsyncCredentials
 from builtins import input
+import webbrowser
 
 dc = DomainConnect()
 
@@ -44,6 +45,7 @@ def main(domain, settings='settings.txt'):
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
 
+    webbrowser.open(context.asyncConsentUrl, autoraise=True)
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
 
     tries = 1
