@@ -27,7 +27,7 @@ setup(
         'validators >= 0.12.2',
         'requests >= 2.19.1',
         'dnspython >= 1.15.0',
-        'domain-connect >= 0.0.4',
+        'domain-connect >= 0.0.6',
     ],
     entry_points = {
         'console_scripts': ['domain-connect-dyndns=dyndns.command_line:main'],

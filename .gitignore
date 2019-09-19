@@ -16,6 +16,7 @@ dyndns.iml
 
 # Virtual env
 sandbox/
+venv*/
 
 # Local settings
 **/settings.txt
