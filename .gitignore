@@ -20,3 +20,7 @@ venv*/
 
 # Local settings
 **/settings.txt
+
+#coverage output
+.coverage
+htmlcov
