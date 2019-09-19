@@ -4,4 +4,5 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install pytest-cov
-script: py.test --cov=dyndns tests
+  - pip install unittest2
+script: py.test --cov=dyndns --cov-config=.coveragerc
