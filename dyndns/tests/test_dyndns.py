@@ -65,7 +65,7 @@ class TestDomainDynDNS(TestCase):
         domain_setup.main(self.host + self.domain)
         assert (os.path.exists('settings.txt')), 'Settings file missing'
         result = domain_update.main(self.host + self.domain)
-        assert (result in ['A record up to date', 'DNS record succesfully updated.']), result
+        assert (result in ['A record up to date.', 'DNS record successfully updated.']), result
 
 
 if __name__ == '__main__':
