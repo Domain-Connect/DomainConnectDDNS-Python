@@ -18,13 +18,13 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             except ValueError:
                 config = {}
     except IOError:
-        return "Couldn't read domain setttings."
+        return "Couldn't read domain settings."
     if domain not in config:
         return "Domain {} not configured.".format(domain)
 
     for field in ['provider_name', 'url_api']:
         if field not in config[domain]:
-            return "Domain {} configured incorectly. Rerun setup.".format(domain)
+            return "Domain {} configured incorrectly. Rerun setup.".format(domain)
     print("Read {} config.".format(domain))
 
     # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
@@ -74,7 +74,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             context = dc.get_domain_connect_template_async_context(
                 domain=domain,
                 provider_id='domainconnect.org',
-                service_id=['dynamicdns',],
+                service_id=['dynamicdns', ],
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         for field in ['code', 'access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
@@ -106,5 +106,5 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         json.dump(config, settings_file, sort_keys=True, indent=1)
 
     if success:
-        return "DNS record succesfully updated."
+        return "DNS record successfully updated."
     return "Could not update DNS record."

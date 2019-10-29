@@ -26,7 +26,7 @@ class TestDomainDynDNS(TestCase):
     def _setup_domain(self, domain):
         domain_setup.main(domain)
 
-    @unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
+    #@unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
     def test_setup_one_domain(self):
         self._setup_domain(self.host + self.domain)
         assert (os.path.exists('settings.txt')), 'Settings file missing'
@@ -41,7 +41,7 @@ class TestDomainDynDNS(TestCase):
                 assert (key in config),\
                     'Key `{}` not found.'.format(key)
 
-    @unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
+    #@unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
     def test_setup_two_domains(self):
         domain_1 = 'host1.' + self.domain
         domain_2 = 'host2.' + self.domain
@@ -60,12 +60,12 @@ class TestDomainDynDNS(TestCase):
                     assert (key in config), \
                         'Key `{}` not found.'.format(key)
 
-    @unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
+    #@unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
     def test_update_domain(self):
         domain_setup.main(self.host + self.domain)
         assert (os.path.exists('settings.txt')), 'Settings file missing'
         result = domain_update.main(self.host + self.domain)
-        assert (result in ['A record up to date', 'DNS record succesfully updated.']), result
+        assert (result in ['A record up to date.', 'DNS record successfully updated.']), result
 
 
 if __name__ == '__main__':

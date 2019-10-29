@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'domain-connect-dyndns',
-    version = '0.0.4',
+    version = '0.0.5',
     description = 'Python client library for Dynamic DNS using Domain Connect',
     license = 'MIT',
     long_description=long_description,
@@ -27,7 +27,7 @@ setup(
         'validators >= 0.12.2',
         'requests >= 2.19.1',
         'dnspython >= 1.15.0',
-        'domain-connect >= 0.0.6',
+        'domain-connect >= 0.0.7',
     ],
     entry_points = {
         'console_scripts': ['domain-connect-dyndns=dyndns.command_line:main'],
