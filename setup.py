@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'domain-connect-dyndns',
-    version = '0.0.5',
+    version = '0.0.6',
     description = 'Python client library for Dynamic DNS using Domain Connect',
     license = 'MIT',
     long_description=long_description,
@@ -24,8 +24,8 @@ setup(
         'dyndns',
     ],
     install_requires = [
-        'validators >= 0.12.2',
-        'requests >= 2.19.1',
+        'validators >= 0.12.6',
+        'requests >= 2.21.0',
         'dnspython >= 1.15.0',
         'domain-connect >= 0.0.7',
     ],
