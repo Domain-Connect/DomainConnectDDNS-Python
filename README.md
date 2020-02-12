@@ -32,3 +32,8 @@ Examples
     domain-connect-dyndns --all update
     domain-connect-dyndns --all status
 ```
+
+Installation issues
+===================
+
+- On some systems there might be no binary distribution of `cryptography` package. Additional installation stepsmay be necessary to build this package from the source code. Please refer to the package documentation: https://cryptography.io/en/latest/installation/
