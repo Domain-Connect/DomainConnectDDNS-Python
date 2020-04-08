@@ -4,6 +4,7 @@ import time
 
 import dns.resolver
 import requests
+import ipaddress
 from domainconnect import DomainConnect, DomainConnectException, DomainConnectAsyncCredentials
 
 dc = DomainConnect()
@@ -28,9 +29,9 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     print("Read {} config.".format(domain))
 
     protocols = {
-        'IP':   {'api': 'https://api.ipify.org', 'record_type': 'A'},
-        'IPv4': {'api': 'https://api.ipify.org', 'record_type': 'A'},
-        'IPv6': {'api': 'https://api6.ipify.org', 'record_type': 'AAAA'}
+        'IP':   {'version': 4, 'api': 'https://api.ipify.org', 'record_type': 'A'},
+        'IPv4': {'version': 4, 'api': 'https://api.ipify.org', 'record_type': 'A'},
+        'IPv6': {'version': 6, 'api': 'https://api6.ipify.org', 'record_type': 'AAAA'}
     }
 
     # if the domain was set up before the protocol option, fallback to ipv4 and old template
@@ -77,12 +78,41 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
         # get public ip
         response = requests.get(protocols[proto]['api'], params={'format': 'json'})
+        try:
+            response_ip = response.json().get('ip', None)
+            # validate http response code
+            if response.status_code != 200:
+                raise ValueError("Could not discover public {} address.".format(proto))
 
-        if response.status_code != 200:
-            return "Could not discover public {} address.".format(proto)
+            # validate the correct returned IP Version
+            if ipaddress.ip_address(response_ip.decode('unicode-escape')).version != protocols[proto]['version']:
+                raise ValueError('The recieved IP address {} doesn\'t match the Protocol {}'
+                                 .format(response_ip, proto))
 
-        public_ip[proto] = response.json().get('ip', None)
-        print("New {} address: {}".format(proto, public_ip[proto]))
+            # validation ok
+            public_ip[proto] = response_ip
+            print("New {} address: {}".format(proto, public_ip[proto]))
+
+        except ValueError as error:
+            print(error)
+            # validation failed! do we have a valid ip elsewhere?
+            # if whe got an ip from the dns query, use it
+            if proto in ip and ip[proto]:
+                public_ip[proto] = ip[proto]
+                print("Fallback to recieved {} address from dns query: {}"
+                      .format(proto, str(ip[proto])))
+            # if whe still have an ip in the config, use it
+            elif ('ip' in config[domain]
+                  and proto in config[domain]['ip']
+                  and config[domain]['ip'][proto]):
+                public_ip[proto] = config[domain]['ip'][proto]
+                print("Fallback to already saved {} address: {}"
+                      .format(proto, config[domain]['ip'][proto]))
+            else:
+                print("Could not retrieve an {} address. Rerun setup with parameter --ignore-{}"
+                      .format(proto, proto.lower()))
+                return None
+
 
         if not ignore_previous_ip and ip[proto] and str(ip[proto]) == str(public_ip[proto]):
             config[domain]['ip'][proto] = public_ip[proto]
