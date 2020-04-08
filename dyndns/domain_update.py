@@ -27,37 +27,69 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             return "Domain {} configured incorrectly. Rerun setup.".format(domain)
     print("Read {} config.".format(domain))
 
-    # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
-    ip = None
-    if 'last_success' in config[domain] and int(time.time()) - config[domain]['last_success'] < 60:
-        ip = config[domain]['ip']
-        print("Recently used IP {}".format(ip))
+    protocols = {
+        'IP':   {'api': 'https://api.ipify.org', 'record_type': 'A'},
+        'IPv4': {'api': 'https://api.ipify.org', 'record_type': 'A'},
+        'IPv6': {'api': 'https://api6.ipify.org', 'record_type': 'AAAA'}
+    }
+
+    # if the domain was set up before the protocol option, fallback to ipv4 and old template
+    if 'protocols' not in config[domain] or 'IP' in config[domain]['protocols']:
+        config[domain]['protocols'] = ['IP']
+        template = 'dynamicdns'
+        group_ids = None
     else:
-        try:
-            answers = dns.resolver.query(domain, 'A')
-            if not answers:
-                return "No A record found for domain {}".format(domain)
-            ip = answers[0]
-            print("IP {} found in A record".format(ip))
-            config[domain]['last_dns_check'] = int(time.time())
-        except Exception:
-            print("No A record found for domain {}".format(domain))
+        template = 'dynamicdns-v2'
+        group_ids = config[domain]['protocols']
 
-    # get public ip
-    response = requests.get("https://api.ipify.org", params={'format': 'json'})
-    if response.status_code != 200:
-        return "Could not discover public IP."
-    public_ip = response.json().get('ip', None)
-    if not public_ip:
-        return "Could not discover public IP."
+    # merge the already set up protocols with the above defined protocol standards
+    protocols = {
+        key:value for key, value in protocols.items()
+        if key in config[domain]['protocols']}
 
-    print("New IP: {}".format(public_ip))
-    if not ignore_previous_ip and ip and str(ip) == str(public_ip):
-        config[domain]['ip'] = public_ip
-        # update settings
-        with open("settings.txt", "w") as settings_file:
-            json.dump(config, settings_file, sort_keys=True, indent=1)
-        return "A record up to date."
+    ip = {}
+    # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
+    if 'last_success' in config[domain] and int(time.time()) - config[domain]['last_success'] < 60:
+        for proto in protocols:
+            ip[proto] = config[domain]['ip'][proto]
+            print("Recently used {} address: {}".format(proto, ip[proto]))
+
+    else:
+        answers = {}
+        for proto in protocols:
+
+            ip[proto] = None
+            record_type = protocols[proto]['record_type']
+            try:
+                answers[record_type] = dns.resolver.query(domain, record_type)
+                if not answers[record_type]:
+                    return "No {} record found for domain {}".format(record_type, domain)
+                ip[proto] = answers[record_type][0]
+                print("IP {} found in {} record".format(ip[proto], record_type))
+
+            except Exception:
+                print("No {} record found for domain {}".format(record_type, domain))
+
+        config[domain]['last_dns_check'] = int(time.time())
+
+    public_ip = {}
+    for proto in protocols:
+
+        # get public ip
+        response = requests.get(protocols[proto]['api'], params={'format': 'json'})
+
+        if response.status_code != 200:
+            return "Could not discover public {} address.".format(proto)
+
+        public_ip[proto] = response.json().get('ip', None)
+        print("New {} address: {}".format(proto, public_ip[proto]))
+
+        if not ignore_previous_ip and ip[proto] and str(ip[proto]) == str(public_ip[proto]):
+            config[domain]['ip'][proto] = public_ip[proto]
+            # update settings
+            with open(settings, "w") as settings_file:
+                json.dump(config, settings_file, sort_keys=True, indent=1)
+            return "{} record up to date.".format(proto)
 
     # update A record
     success = True
@@ -67,14 +99,14 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                 domain=domain,
                 provider_id='domainconnect.org',
                 service_id_in_path=True,
-                service_id='dynamicdns',
+                service_id=template,
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         else:
             context = dc.get_domain_connect_template_async_context(
                 domain=domain,
                 provider_id='domainconnect.org',
-                service_id=['dynamicdns', ],
+                service_id=[template],
                 redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
             )
         for field in ['code', 'access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
@@ -89,11 +121,17 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         for field in ['access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
             config[domain].update({field: getattr(context, field)})
 
+        params = {}
+        for proto in protocols:
+            params[proto] = public_ip[proto]
+
         dc.apply_domain_connect_template_async(
             context,
-            service_id='dynamicdns',
-            params={'IP': public_ip}
+            service_id=template,
+            params=params,
+            group_ids=group_ids
         )
+
         config[domain]['last_success'] = int(time.time())
         config[domain]['ip'] = public_ip
     except DomainConnectException as e:
