@@ -26,7 +26,7 @@ def main(domain, settings='settings.txt'):
             domain=domain,
             provider_id='domainconnect.org',
             service_id_in_path=True,
-            service_id='dynamicdns',
+            service_id='dynamicdns-v2',
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
@@ -34,7 +34,7 @@ def main(domain, settings='settings.txt'):
         context = dc.get_domain_connect_template_async_context(
             domain=domain,
             provider_id='domainconnect.org',
-            service_id=['dynamicdns',],
+            service_id=['dynamicdns-v2'],
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
