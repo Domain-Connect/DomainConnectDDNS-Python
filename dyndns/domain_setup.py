@@ -10,7 +10,7 @@ import webbrowser
 dc = DomainConnect()
 
 
-def main(domain, settings='settings.txt'):
+def main(domain, protocols, settings='settings.txt'):
     # get Domain Connect config
     try:
         config = dc.get_domain_config(domain)
@@ -74,7 +74,8 @@ def main(domain, settings='settings.txt'):
                 'access_token': context.access_token,
                 'refresh_token': context.refresh_token,
                 'iat': context.iat,
-                'access_token_expires_in': context.access_token_expires_in
+                'access_token_expires_in': context.access_token_expires_in,
+                'protocols': protocols
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
