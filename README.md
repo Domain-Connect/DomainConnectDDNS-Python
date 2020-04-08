@@ -2,18 +2,27 @@ Usage
 =====
 
 ```
-domain-connect-dyndns [-h] [--config CONFIG] (--domain DOMAIN | --all) {setup,update,status}
+domain-connect-dyndns [-h] [--config CONFIG] [--ignore-previous-ip]
+                      [--ignore-ipv4] [--ignore-ipv6]
+                      (--domain DOMAIN | --all)
+                      {setup,update,status}
 ```
 
-Positional arguments:
-- {setup,update, status} --- action on domain
+**Positional arguments:**
 
-Optional arguments:
-- --config CONFIG --- config file path
-- --domain DOMAIN --- domain to keep up to date
-- --all --- update all domains in config
-- -h --- display help and exit
+`{setup, update, status}` - action on domain
 
+**Optional arguments:**
+
+```
+--config CONFIG         --- config file path
+--domain DOMAIN         --- domain to keep up to date
+--all                   --- update all domains in config
+--ignore-previous-ip    --- update the IP even if no change detected.
+--ignore-ipv4           --- ignore IPv4 Protocol on setup
+--ignore-ipv6           --- ignore IPv6 Protocol on setup
+-h                      --- display help and exit
+```
 
 Installation
 ============
