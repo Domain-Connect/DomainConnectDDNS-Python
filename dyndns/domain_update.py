@@ -144,5 +144,5 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         json.dump(config, settings_file, sort_keys=True, indent=1)
 
     if success:
-        return "DNS record successfully updated."
-    return "Could not update DNS record."
+        return "DNS records successfully updated."
+    return "Could not update DNS records."
