@@ -9,6 +9,10 @@ from domainconnect import DomainConnect, DomainConnectException, DomainConnectAs
 
 dc = DomainConnect()
 
+my_resolver = dns.resolver.Resolver()
+
+# 8.8.8.8 is Google's public DNS server
+my_resolver.nameservers = ['8.8.8.8']
 
 def main(domain, settings='settings.txt', ignore_previous_ip=False):
     # get local settings for domain
@@ -49,31 +53,34 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         if key in config[domain]['protocols']}
 
     ip = {}
-    # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
-    if 'last_success' in config[domain] and int(time.time()) - config[domain]['last_success'] < 60:
-        for proto in protocols:
-            ip[proto] = config[domain]['ip'][proto]
-            print("Recently used {} address: {}".format(proto, ip[proto]))
+    # skip any reference to previous values if there was no success so far (assure first update, prevent negative TTL)
+    if 'last_success' in config[domain]:
+        # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
+        if int(time.time()) - config[domain]['last_success'] < 60:
+            for proto in protocols:
+                ip[proto] = config[domain]['ip'][proto]
+                print("Recently used {} address: {}".format(proto, ip[proto]))
 
-    else:
-        answers = {}
-        for proto in protocols:
+        else:
+            answers = {}
+            for proto in protocols:
 
-            ip[proto] = None
-            record_type = protocols[proto]['record_type']
-            try:
-                answers[record_type] = dns.resolver.query(domain, record_type)
-                if not answers[record_type]:
-                    return "No {} record found for domain {}".format(record_type, domain)
-                ip[proto] = answers[record_type][0]
-                print("IP {} found in {} record".format(ip[proto], record_type))
+                ip[proto] = None
+                record_type = protocols[proto]['record_type']
+                try:
+                    answers[record_type] = my_resolver.query(domain, record_type)
+                    if not answers[record_type]:
+                        return "No {} record found for domain {}".format(record_type, domain)
+                    ip[proto] = answers[record_type][0].address
+                    print("IP {} found in {} record".format(ip[proto], record_type))
 
-            except Exception:
-                print("No {} record found for domain {}".format(record_type, domain))
+                except Exception as e:
+                    print("No {} record found for domain {}".format(record_type, domain))
 
-        config[domain]['last_dns_check'] = int(time.time())
+            config[domain]['last_dns_check'] = int(time.time())
 
     public_ip = {}
+    update_required = False
     for proto in protocols:
 
         # get public ip
@@ -85,13 +92,13 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                 raise ValueError("Could not discover public {} address.".format(proto))
 
             # validate the correct returned IP Version
-            if ipaddress.ip_address(response_ip.decode('unicode-escape')).version != protocols[proto]['version']:
-                raise ValueError('The recieved IP address {} doesn\'t match the Protocol {}'
+            if ipaddress.ip_address(response_ip).version != protocols[proto]['version']:
+                raise ValueError("The received IP address {} doesn't match the Protocol {}"
                                  .format(response_ip, proto))
 
             # validation ok
             public_ip[proto] = response_ip
-            print("New {} address: {}".format(proto, public_ip[proto]))
+            print("Public {} address: {}".format(proto, public_ip[proto]))
 
         except ValueError as error:
             print(error)
@@ -99,7 +106,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             # if whe got an ip from the dns query, use it
             if proto in ip and ip[proto]:
                 public_ip[proto] = ip[proto]
-                print("Fallback to recieved {} address from dns query: {}"
+                print("Fallback to received {} address from dns query: {}"
                       .format(proto, str(ip[proto])))
             # if whe still have an ip in the config, use it
             elif ('ip' in config[domain]
@@ -113,15 +120,21 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                       .format(proto, proto.lower()))
                 return None
 
-
-        if not ignore_previous_ip and ip[proto] and str(ip[proto]) == str(public_ip[proto]):
+        if not ignore_previous_ip and proto in ip and str(ip[proto]) == str(public_ip[proto]):
             config[domain]['ip'][proto] = public_ip[proto]
-            # update settings
-            with open(settings, "w") as settings_file:
-                json.dump(config, settings_file, sort_keys=True, indent=1)
-            return "{} record up to date.".format(proto)
+            print("{} record up to date.".format(proto))
+        else:
+            update_required = True
 
-    # update A record
+    if not update_required:
+        # update settings
+        with open(settings, "w") as settings_file:
+            new_settings = json.dumps(config, sort_keys=True, indent=1)
+            settings_file.write(new_settings)
+        return "All records up to date. No update required."
+
+
+    # update DNS records
     success = True
     try:
         context = dc.get_domain_connect_template_async_context(
@@ -162,7 +175,8 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
     # update settings
     with open(settings, "w") as settings_file:
-        json.dump(config, settings_file, sort_keys=True, indent=1)
+        new_settings = json.dumps(config, sort_keys=True, indent=1)
+        settings_file.write(new_settings)
 
     if success:
         return "DNS records successfully updated."
