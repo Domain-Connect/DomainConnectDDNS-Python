@@ -55,7 +55,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     if not ignore_previous_ip and ip and str(ip) == str(public_ip):
         config[domain]['ip'] = public_ip
         # update settings
-        with open("settings.txt", "w") as settings_file:
+        with open(settings, "w") as settings_file:
             json.dump(config, settings_file, sort_keys=True, indent=1)
         return "A record up to date."
 
