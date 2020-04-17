@@ -26,12 +26,13 @@ def main(domain, settings='settings.txt'):
     if 'ip' in config[domain]:
         if isinstance(config[domain]['ip'], basestring):
             info['IPv4 value'] = config[domain]['ip']
-        if 'IP' in config[domain]['ip']:
-            info['IPv4 value'] = config[domain]['ip']['IP']
-        if 'IPv4' in config[domain]['ip']:
-            info['IPv4 value'] = config[domain]['ip']['IPv4']
-        if 'IPv6' in config[domain]['ip']:
-            info['IPv6 value'] = config[domain]['ip']['IPv6']
+        else:
+            if 'IP' in config[domain]['ip']:
+                info['IPv4 value'] = config[domain]['ip']['IP']
+            if 'IPv4' in config[domain]['ip']:
+                info['IPv4 value'] = config[domain]['ip']['IPv4']
+            if 'IPv6' in config[domain]['ip']:
+                info['IPv6 value'] = config[domain]['ip']['IPv6']
 
     if 'last_success' in config[domain]:
         info['Last DNS succesful update'] = datetime.datetime.fromtimestamp(config[domain]['last_success']) \
