@@ -124,21 +124,12 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     # update A record
     success = True
     try:
-        if config[domain]['provider_name'].lower() in ['godaddy', 'secureserver']:
-            context = dc.get_domain_connect_template_async_context(
-                domain=domain,
-                provider_id='domainconnect.org',
-                service_id_in_path=True,
-                service_id=template,
-                redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
-            )
-        else:
-            context = dc.get_domain_connect_template_async_context(
-                domain=domain,
-                provider_id='domainconnect.org',
-                service_id=[template],
-                redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
-            )
+        context = dc.get_domain_connect_template_async_context(
+            domain=domain,
+            provider_id='domainconnect.org',
+            service_id=[template],
+            redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
+        )
         for field in ['code', 'access_token', 'refresh_token', 'iat', 'access_token_expires_in']:
             if field in config[domain]:
                 setattr(context, field, config[domain][field])

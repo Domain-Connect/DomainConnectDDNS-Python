@@ -21,23 +21,14 @@ def main(domain, protocols, settings='settings.txt'):
     params = {
         'IP': '0.0.0.0'
     }
-    if config.providerName.lower() in ['godaddy', 'secureserver']:
-        context = dc.get_domain_connect_template_async_context(
-            domain=domain,
-            provider_id='domainconnect.org',
-            service_id_in_path=True,
-            service_id='dynamicdns-v2',
-            params=params,
-            redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
-        )
-    else:
-        context = dc.get_domain_connect_template_async_context(
-            domain=domain,
-            provider_id='domainconnect.org',
-            service_id=['dynamicdns-v2'],
-            params=params,
-            redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
-        )
+
+    context = dc.get_domain_connect_template_async_context(
+        domain=domain,
+        provider_id='domainconnect.org',
+        service_id=['dynamicdns-v2'],
+        params=params,
+        redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
+    )
 
     webbrowser.open(context.asyncConsentUrl, autoraise=True)
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
