@@ -2,16 +2,17 @@ Usage
 =====
 
 ```
-domain-connect-dyndns [-h] [--config CONFIG] (--domain DOMAIN | --all) {setup,update,status}
+domain-connect-dyndns [-h] [--config CONFIG] (--domain DOMAIN | --all) {setup,update,status,remove}
 ```
 
 Positional arguments:
-- {setup,update, status} --- action on domain
+- {setup,update,status,remove} --- action on domain
 
 Optional arguments:
 - --config CONFIG --- config file path
 - --domain DOMAIN --- domain to keep up to date
 - --all --- update all domains in config
+- --backup-file --- file path for backup domains before remove
 - -h --- display help and exit
 
 
@@ -28,9 +29,11 @@ Examples
     domain-connect-dyndns --domain [domain] setup
     domain-connect-dyndns --domain [domain] update
     domain-connect-dyndns --domain [domain] status
+    domain-connect-dyndns --domain [domain] remove
     
     domain-connect-dyndns --all update
     domain-connect-dyndns --all status
+    domain-connect-dyndns --all remove
 ```
 
 Installation issues
