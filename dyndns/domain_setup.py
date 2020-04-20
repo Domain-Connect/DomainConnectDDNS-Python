@@ -3,7 +3,7 @@ import os.path
 import sys
 
 import requests
-from domainconnect import DomainConnect, DomainConnectAsyncCredentials
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException
 from builtins import input
 import webbrowser
 
@@ -24,13 +24,26 @@ def main(domain, protocols, settings='settings.txt'):
         'IPv6': '::'
     }
 
-    context = dc.get_domain_connect_template_async_context(
-        domain=domain,
-        provider_id='domainconnect.org',
-        service_id=['dynamicdns-v2'],
-        params=params,
-        redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
-    )
+    try:
+        context = dc.get_domain_connect_template_async_context(
+            domain=domain,
+            provider_id='domainconnect.org',
+            service_id=['dynamicdns-v2'],
+            params=params,
+            redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
+        )
+    except TemplateNotSupportedException:
+        if 'IPv6' in protocols:
+            raise
+        # Fallback to template v1 if v2 not supported and only IPv4 needed
+        protocols = ['IP']
+        context = dc.get_domain_connect_template_async_context(
+            domain=domain,
+            provider_id='domainconnect.org',
+            service_id=['dynamicdns'],
+            params=params,
+            redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
+        )
 
     webbrowser.open(context.asyncConsentUrl, autoraise=True)
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
