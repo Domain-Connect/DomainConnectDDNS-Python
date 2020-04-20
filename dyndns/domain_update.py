@@ -43,6 +43,11 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         config[domain]['protocols'] = ['IP']
         template = 'dynamicdns'
         group_ids = None
+        if 'ip' in config[domain]:
+            # rewrite the config with last IP new style
+            config[domain]['ip'] = {
+                'IP': config[domain]['ip']
+            }
     else:
         template = 'dynamicdns-v2'
         group_ids = config[domain]['protocols']
@@ -103,16 +108,12 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
         except ValueError as error:
             print(error)
-            # validation failed! do we have a valid ip elsewhere?
-            # if whe got an ip from the dns query, use it
-            if proto in ip and ip[proto]:
-                public_ip[proto] = ip[proto]
-                print("Fallback to received {} address from dns query: {}"
-                      .format(proto, str(ip[proto])))
-            # if whe still have an ip in the config, use it
-            elif ('ip' in config[domain]
-                  and proto in config[domain]['ip']
-                  and config[domain]['ip'][proto]):
+            # could not get valid external IP for protocol (may be temporary)!
+            # if whe still have an ip in the config, use it so to make best effort update
+            # (for example new v4 even if v6 cannot be read)
+            if ('ip' in config[domain]
+                and proto in config[domain]['ip']
+                and config[domain]['ip'][proto]):
                 public_ip[proto] = config[domain]['ip'][proto]
                 print("Fallback to already saved {} address: {}"
                       .format(proto, config[domain]['ip'][proto]))
