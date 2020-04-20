@@ -86,10 +86,11 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         # get public ip
         response = requests.get(protocols[proto]['api'], params={'format': 'json'})
         try:
-            response_ip = response.json().get('ip', None)
             # validate http response code
             if response.status_code != 200:
                 raise ValueError("Could not discover public {} address.".format(proto))
+
+            response_ip = response.json().get('ip', None)
 
             # validate the correct returned IP Version
             if ipaddress.ip_address(response_ip).version != protocols[proto]['version']:
