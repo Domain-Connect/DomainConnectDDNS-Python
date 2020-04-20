@@ -7,6 +7,7 @@ from dyndns import domain_setup
 from dyndns import domain_update
 from dyndns import domain_status
 
+
 def main():
     parser = argparse.ArgumentParser(description="Config domain for DynDNS")
 
@@ -70,3 +71,7 @@ def main():
             print(domain_update.main(domain, settings, ignore_previous_ip))
         elif action == 'status':
             print(domain_status.main(domain, settings))
+
+
+if __name__ == "__main__":
+    main()
