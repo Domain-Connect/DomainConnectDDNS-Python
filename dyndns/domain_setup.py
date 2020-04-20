@@ -19,7 +19,9 @@ def main(domain, protocols, settings='settings.txt'):
 
     # form consent url
     params = {
-        'IP': '0.0.0.0'
+        'IP': '0.0.0.0',
+        'IPv4': '0.0.0.0',
+        'IPv6': '::'
     }
 
     context = dc.get_domain_connect_template_async_context(
