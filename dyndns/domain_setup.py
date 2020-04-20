@@ -72,5 +72,5 @@ def main(domain, protocols, settings='settings.txt'):
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
-        return "Domain {} has been succesfully configured.".format(domain)
+        return "Domain {} has been successfully configured.".format(domain)
     return "Could not store domain config."
