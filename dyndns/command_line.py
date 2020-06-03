@@ -15,8 +15,8 @@ def main():
     parser.add_argument('--config', type=str, default='settings.txt', help="config file path")
     parser.add_argument('--ignore-previous-ip', action='store_true', dest='ignore_previous_ip',
                         help="Update the IP even if no change detected. Don't use on regular update!")
-    parser.add_argument('--ignore-ipv4', action='store_true', dest='ignore_ipv4', help="Dont update IPv4 addresses")
-    parser.add_argument('--ignore-ipv6', action='store_true', dest='ignore_ipv6', help="Dont update IPv6 addresses")
+    parser.add_argument('--protocols', nargs="*", choices=["ipv4", "ipv6"], default=["ipv4"],
+                        help="Kind of IP to update", dest="protocols")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--domain', type=str, help="domain to keep up to date")
     group.add_argument('--all', action='store_true', help="update all domains in config")
@@ -28,8 +28,8 @@ def main():
     all = args.all
     settings = args.config
     ignore_previous_ip = args.ignore_previous_ip
-    ignore_ipv4 = args.ignore_ipv4
-    ignore_ipv6 = args.ignore_ipv6
+    ignore_ipv4 = "ipv4" not in args.protocols
+    ignore_ipv6 = "ipv6" not in args.protocols
 
     # validate domain
     if domain and not validators.domain(domain) is True:
