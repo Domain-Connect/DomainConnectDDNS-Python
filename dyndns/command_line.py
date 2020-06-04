@@ -25,7 +25,7 @@ def main():
 
     action = args.action
     domain = args.domain
-    all = args.all
+    allargs = args.all
     settings = args.config
     ignore_previous_ip = args.ignore_previous_ip
     ignore_ipv4 = "ipv4" not in args.protocols
@@ -36,7 +36,7 @@ def main():
         print("Domain is not valid.")
         return
 
-    if all and action == 'setup':
+    if allargs and action == 'setup':
         print("Bulk setup not supported")
         return
 
@@ -51,7 +51,7 @@ def main():
         protocols.remove('IPv6')
 
     domains = []
-    if all:
+    if allargs:
         try:
             with open(settings, "r") as settings_file:
                 try:
