@@ -2,15 +2,16 @@ Usage
 =====
 
 ```
-domain-connect-dyndns [-h] [--config CONFIG] [--ignore-previous-ip]
-                      [--ignore-ipv4] [--ignore-ipv6]
+domain-connect-dyndns [-h] [--config CONFIG]
+                      [--ignore-previous-ip]
+                      [--protocols (ipv4, ipv6)] 
                       (--domain DOMAIN | --all)
-                      {setup,update,status}
+                      {setup,update,status,remove}
 ```
 
 **Positional arguments:**
 
-`{setup, update, status}` - action on domain
+- {setup,update,status,remove} --- action on domain
 
 **Optional arguments:**
 
@@ -19,10 +20,11 @@ domain-connect-dyndns [-h] [--config CONFIG] [--ignore-previous-ip]
 --domain DOMAIN         --- domain to keep up to date
 --all                   --- update all domains in config
 --ignore-previous-ip    --- update the IP even if no change detected.
---ignore-ipv4           --- ignore IPv4 Protocol on setup
---ignore-ipv6           --- ignore IPv6 Protocol on setup
+--protocols             --- a space separated list of protocols to set up. Possible values: ipv4, ipv6. Default: ipv4
+--backup-file           --- file path for backup domains before remove
 -h                      --- display help and exit
 ```
+
 
 Installation
 ============
@@ -35,11 +37,14 @@ Examples
 ========
 ```
     domain-connect-dyndns --domain [domain] setup
+    domain-connect-dyndns --domain [domain] --protocols ipv4 ipv6 setup
     domain-connect-dyndns --domain [domain] update
     domain-connect-dyndns --domain [domain] status
+    domain-connect-dyndns --domain [domain] --backup-file settings.bak remove
     
     domain-connect-dyndns --all update
     domain-connect-dyndns --all status
+    domain-connect-dyndns --all remove
 ```
 
 Installation issues
