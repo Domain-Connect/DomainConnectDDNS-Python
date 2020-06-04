@@ -148,15 +148,15 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             # could not get valid external IP for protocol (may be temporary)!
             # if whe still have an ip in the config, use it so to make best effort update
             # (for example new v4 even if v6 cannot be read)
-            if ('ip' in config[domain]
-                and proto in config[domain]['ip']
-                and config[domain]['ip'][proto]):
+            if 'ip' in config[domain] \
+                    and proto in config[domain]['ip'] \
+                    and config[domain]['ip'][proto]:
                 public_ip[proto] = config[domain]['ip'][proto]
                 print("Fallback to already saved {} address: {}"
                       .format(proto, config[domain]['ip'][proto]))
             else:
-                print("Could not retrieve an {} address. Rerun setup with parameter --ignore-{}"
-                      .format(proto, proto.lower()))
+                print("Could not retrieve an {} address. Rerun setup with an adjusted --protocols parameter."
+                      .format(proto))
                 return None
 
         if not ignore_previous_ip and proto in ip and str(ip[proto]) == str(public_ip[proto]):
