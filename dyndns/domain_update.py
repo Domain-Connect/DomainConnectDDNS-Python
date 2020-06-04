@@ -34,8 +34,14 @@ dc = DomainConnect()
 
 my_resolver = dns.resolver.Resolver()
 
+# add some public resolvers in case the local one would not resolve local ipv6 addresses (happens for Fritz!Box)
 # 8.8.8.8 is Google's public DNS server
-my_resolver.nameservers = ['8.8.8.8']
+# 176.103.130.130 AdGuard public DNS server
+# 1.1.1.1 Cloudflare
+# 9.9.9.9 Quad9
+# 156.154.70.1 Neustar
+my_resolver.nameservers += ['1.1.1.1', '8.8.8.8', '9.9.9.9', '156.154.70.1', '176.103.130.130']
+
 
 def main(domain, settings='settings.txt', ignore_previous_ip=False):
     # get local settings for domain
