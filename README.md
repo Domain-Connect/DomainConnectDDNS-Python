@@ -3,10 +3,10 @@ Usage
 
 ```
 domain-connect-dyndns [-h] [--config CONFIG]
+                      {setup,update,status,remove}
                       [--ignore-previous-ip]
                       [--protocols (ipv4, ipv6)] 
                       (--domain DOMAIN | --all)
-                      {setup,update,status,remove}
 ```
 
 **Positional arguments:**
@@ -36,15 +36,15 @@ Installation
 Examples
 ========
 ```
-    domain-connect-dyndns --domain [domain] setup
-    domain-connect-dyndns --domain [domain] --protocols ipv4 ipv6 setup
-    domain-connect-dyndns --domain [domain] update
-    domain-connect-dyndns --domain [domain] status
-    domain-connect-dyndns --domain [domain] --backup-file settings.bak remove
+    domain-connect-dyndns setup --domain [domain]
+    domain-connect-dyndns setup --domain [domain] --protocols ipv4 ipv6
+    domain-connect-dyndns update --domain [domain]
+    domain-connect-dyndns status --domain [domain]
+    domain-connect-dyndns remove --domain [domain] --backup-file settings.bak
     
-    domain-connect-dyndns --all update
-    domain-connect-dyndns --all status
-    domain-connect-dyndns --all remove
+    domain-connect-dyndns update --all
+    domain-connect-dyndns status --all
+    domain-connect-dyndns remove --all
 ```
 
 Installation issues
