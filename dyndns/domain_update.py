@@ -122,12 +122,12 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
         # get public ip
         try:
-            allowed_gai_family_orig = urllib3_cn.allowed_gai_family
-            urllib3_cn.allowed_gai_family = protocols[proto]['protocol_enforce']
-            response = requests.get(protocols[proto]['api'], params={'format': 'json'})
-        finally:
-            urllib3_cn.allowed_gai_family = allowed_gai_family_orig
-        try:
+            try:
+                allowed_gai_family_orig = urllib3_cn.allowed_gai_family
+                urllib3_cn.allowed_gai_family = protocols[proto]['protocol_enforce']
+                response = requests.get(protocols[proto]['api'], params={'format': 'json'})
+            finally:
+                urllib3_cn.allowed_gai_family = allowed_gai_family_orig
             # validate http response code
             if response.status_code != 200:
                 raise ValueError("Could not discover public {} address.".format(proto))
@@ -143,7 +143,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             public_ip[proto] = response_ip
             print("Public {} address: {}".format(proto, public_ip[proto]))
 
-        except ValueError as error:
+        except Exception as error:
             print(error)
             # could not get valid external IP for protocol (may be temporary)!
             # if whe still have an ip in the config, use it so to make best effort update
