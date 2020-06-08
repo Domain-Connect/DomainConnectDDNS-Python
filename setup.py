@@ -28,6 +28,7 @@ setup(
         'requests >= 2.21.0',
         'dnspython >= 1.15.0',
         'domain-connect >= 0.0.7',
+        'ipaddress >= 1.0.23;python_version<"3.3"',
     ],
     entry_points = {
         'console_scripts': ['domain-connect-dyndns=dyndns.command_line:main'],

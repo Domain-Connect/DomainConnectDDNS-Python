@@ -2,18 +2,28 @@ Usage
 =====
 
 ```
-domain-connect-dyndns [-h] [--config CONFIG] (--domain DOMAIN | --all) {setup,update,status,remove}
+domain-connect-dyndns [-h] [--config CONFIG]
+                      {setup,update,status,remove}
+                      [--ignore-previous-ip]
+                      [--protocols (ipv4, ipv6)] 
+                      (--domain DOMAIN | --all)
 ```
 
-Positional arguments:
+**Positional arguments:**
+
 - {setup,update,status,remove} --- action on domain
 
-Optional arguments:
-- --config CONFIG --- config file path
-- --domain DOMAIN --- domain to keep up to date
-- --all --- update all domains in config
-- --backup-file --- file path for backup domains before remove
-- -h --- display help and exit
+**Optional arguments:**
+
+```
+--config CONFIG         --- config file path
+--domain DOMAIN         --- domain to keep up to date
+--all                   --- update all domains in config
+--ignore-previous-ip    --- update the IP even if no change detected.
+--protocols             --- a space separated list of protocols to set up. Possible values: ipv4, ipv6. Default: ipv4
+--backup-file           --- file path for backup domains before remove
+-h                      --- display help and exit
+```
 
 
 Installation
@@ -26,14 +36,15 @@ Installation
 Examples
 ========
 ```
-    domain-connect-dyndns --domain [domain] setup
-    domain-connect-dyndns --domain [domain] update
-    domain-connect-dyndns --domain [domain] status
-    domain-connect-dyndns --domain [domain] remove
+    domain-connect-dyndns setup --domain [domain]
+    domain-connect-dyndns setup --domain [domain] --protocols ipv4 ipv6
+    domain-connect-dyndns update --domain [domain]
+    domain-connect-dyndns status --domain [domain]
+    domain-connect-dyndns remove --domain [domain] --backup-file settings.bak
     
-    domain-connect-dyndns --all update
-    domain-connect-dyndns --all status
-    domain-connect-dyndns --all remove
+    domain-connect-dyndns update --all
+    domain-connect-dyndns status --all
+    domain-connect-dyndns remove --all
 ```
 
 Installation issues

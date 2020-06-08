@@ -17,7 +17,8 @@ def main():
     parser.add_argument('--backup_file', default=None, help="backup file path for remove domain")
     parser.add_argument('--ignore-previous-ip', action='store_true', dest='ignore_previous_ip',
                         help="Update the IP even if no change detected. Don't use on regular update!")
-
+    parser.add_argument('--protocols', nargs="*", choices=["ipv4", "ipv6"], default=["ipv4"],
+                        help="Kind of IP to update", dest="protocols")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--domain', type=str, help="domain to keep up to date")
     group.add_argument('--all', action='store_true', help="update all domains in config")
@@ -26,17 +27,19 @@ def main():
 
     action = args.action
     domain = args.domain
-    all = args.all
+    allargs = args.all
     settings = args.config
     backup_file = args.backup_file
     ignore_previous_ip = args.ignore_previous_ip
+    ignore_ipv4 = "ipv4" not in args.protocols
+    ignore_ipv6 = "ipv6" not in args.protocols
 
     # validate domain
     if domain and not validators.domain(domain) is True:
         print("Domain is not valid.")
         return
 
-    if all and action == 'setup':
+    if allargs and action == 'setup':
         print("Bulk setup not supported")
         return
 
@@ -48,8 +51,14 @@ def main():
         print("--ignore-previous-ip only valid with update action")
         return
 
+    protocols = ['IPv4', 'IPv6']
+    if ignore_ipv4:
+        protocols.remove('IPv4')
+    if ignore_ipv6:
+        protocols.remove('IPv6')
+
     domains = []
-    if all:
+    if allargs:
         try:
             with open(settings, "r") as settings_file:
                 try:
@@ -64,10 +73,14 @@ def main():
 
     for domain in domains:
         if action == 'setup':
-            print(domain_setup.main(domain, settings))
+            print(domain_setup.main(domain, protocols, settings))
         elif action == 'update':
             print(domain_update.main(domain, settings, ignore_previous_ip))
         elif action == 'status':
             print(domain_status.main(domain, settings))
         elif action == 'remove':
             print(domain_remove.main(domain, settings, backup_file))
+
+
+if __name__ == "__main__":
+    main()

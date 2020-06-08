@@ -3,14 +3,14 @@ import os.path
 import sys
 
 import requests
-from domainconnect import DomainConnect, DomainConnectAsyncCredentials
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException
 from builtins import input
 import webbrowser
 
 dc = DomainConnect()
 
 
-def main(domain, settings='settings.txt'):
+def main(domain, protocols, settings='settings.txt'):
     # get Domain Connect config
     try:
         config = dc.get_domain_config(domain)
@@ -19,22 +19,28 @@ def main(domain, settings='settings.txt'):
 
     # form consent url
     params = {
-        'IP': '0.0.0.0'
+        'IP': '0.0.0.0',
+        'IPv4': '0.0.0.0',
+        'IPv6': '::'
     }
-    if config.providerName.lower() in ['godaddy', 'secureserver']:
+
+    try:
         context = dc.get_domain_connect_template_async_context(
             domain=domain,
             provider_id='domainconnect.org',
-            service_id_in_path=True,
-            service_id='dynamicdns',
+            service_id=['dynamicdns-v2'],
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
-    else:
+    except TemplateNotSupportedException:
+        if 'IPv6' in protocols:
+            raise
+        # Fallback to template v1 if v2 not supported and only IPv4 needed
+        protocols = ['IP']
         context = dc.get_domain_connect_template_async_context(
             domain=domain,
             provider_id='domainconnect.org',
-            service_id=['dynamicdns',],
+            service_id=['dynamicdns'],
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
@@ -74,9 +80,10 @@ def main(domain, settings='settings.txt'):
                 'access_token': context.access_token,
                 'refresh_token': context.refresh_token,
                 'iat': context.iat,
-                'access_token_expires_in': context.access_token_expires_in
+                'access_token_expires_in': context.access_token_expires_in,
+                'protocols': protocols
             }
         })
         json.dump(existing_config, settings_file, sort_keys=True, indent=1)
-        return "Domain {} has been succesfully configured.".format(domain)
+        return "Domain {} has been successfully configured.".format(domain)
     return "Could not store domain config."
