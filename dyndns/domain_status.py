@@ -24,7 +24,7 @@ def main(domain, settings='settings.txt'):
         info['Last DNS check'] = datetime.datetime.fromtimestamp(config[domain]['last_dns_check']) \
             .strftime("%d %B %Y %H:%M")
     if 'ip' in config[domain]:
-        if isinstance(config[domain]['ip'], basestring):
+        if isinstance(config[domain]['ip'], (str, bytes)):
             info['IPv4 value'] = config[domain]['ip']
         else:
             if 'IP' in config[domain]['ip']:
