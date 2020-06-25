@@ -11,7 +11,7 @@ def main(domain, settings='settings.txt', backup_file=None):
             except ValueError:
                 config = {}
     except IOError:
-        return "Couldn't read domain setttings."
+        return "Couldn't read domain settings."
 
     if domain not in config:
         return "Domain {} not configured. Nothing to remove.".format(domain)
@@ -29,7 +29,7 @@ def main(domain, settings='settings.txt', backup_file=None):
             backup_config = {}
 
         if domain in backup_config:
-            print(("Domain {} already in backup. Overwrite "
+            print(("  Domain {} already in backup. Overwrite "
                    "existing entry.").format(domain))
 
         backup_config[domain] = removed_domain
@@ -37,7 +37,7 @@ def main(domain, settings='settings.txt', backup_file=None):
         with open(backup_file, "w") as bf:
             json.dump(backup_config, bf, sort_keys=True, indent=1)
 
-        print(("Successfully backup domain settings for {} "
+        print(("  Successfully backup domain settings for {} "
                "in file {}.").format(domain, backup_file))
 
     with open(settings, "w") as settings_file:

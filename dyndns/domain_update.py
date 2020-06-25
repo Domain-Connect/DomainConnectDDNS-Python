@@ -40,7 +40,7 @@ my_resolver = dns.resolver.Resolver()
 # 1.1.1.1 Cloudflare
 # 9.9.9.9 Quad9
 # 156.154.70.1 Neustar
-my_resolver.nameservers += ['1.1.1.1', '8.8.8.8', '9.9.9.9', '156.154.70.1', '176.103.130.130']
+my_resolver.nameservers = ['1.1.1.1', '8.8.8.8', '9.9.9.9', '156.154.70.1', '176.103.130.130']
 
 
 def main(domain, settings='settings.txt', ignore_previous_ip=False):
@@ -59,6 +59,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     for field in ['provider_name', 'url_api']:
         if field not in config[domain]:
             return "Domain {} configured incorrectly. Rerun setup.".format(domain)
+    print()
     print("Read {} config.".format(domain))
 
     protocols = {
@@ -86,7 +87,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
     # merge the already set up protocols with the above defined protocol standards
     protocols = {
-        key:value for key, value in protocols.items()
+        key: value for key, value in protocols.items()
         if key in config[domain]['protocols']}
 
     ip = {}
@@ -96,7 +97,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         if int(time.time()) - config[domain]['last_success'] < 60:
             for proto in protocols:
                 ip[proto] = config[domain]['ip'][proto]
-                print("Recently used {} address: {}".format(proto, ip[proto]))
+                print("  Recently used {} address: {}".format(proto, ip[proto]))
 
         else:
             answers = {}
@@ -109,10 +110,10 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                     if not answers[record_type]:
                         return "No {} record found for domain {}".format(record_type, domain)
                     ip[proto] = answers[record_type][0].address
-                    print("IP {} found in {} record".format(ip[proto], record_type))
+                    print("  IP {} found in {} record".format(ip[proto], record_type))
 
                 except Exception as e:
-                    print("No {} record found for domain {}".format(record_type, domain))
+                    print("  No {} record found for domain {}".format(record_type, domain))
 
             config[domain]['last_dns_check'] = int(time.time())
 
@@ -141,7 +142,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
             # validation ok
             public_ip[proto] = response_ip
-            print("Public {} address: {}".format(proto, public_ip[proto]))
+            print("  Public {} address: {}".format(proto, public_ip[proto]))
 
         except Exception as error:
             print(error)
@@ -152,10 +153,10 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                     and proto in config[domain]['ip'] \
                     and config[domain]['ip'][proto]:
                 public_ip[proto] = config[domain]['ip'][proto]
-                print("Fallback to already saved {} address: {}"
+                print("  Fallback to already saved {} address: {}"
                       .format(proto, config[domain]['ip'][proto]))
             else:
-                print("Could not retrieve an {} address. Rerun setup with an adjusted --protocols parameter."
+                print("  Could not retrieve an {} address. Rerun setup with an adjusted --protocols parameter."
                       .format(proto))
                 return None
 
@@ -167,7 +168,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                 and proto in ip \
                 and str(ip[proto]) == str(public_ip[proto]):
             config[domain]['ip'][proto] = public_ip[proto]
-            print("{} record up to date.".format(proto))
+            print("  {} record up to date.".format(proto))
         else:
             update_required = True
 
