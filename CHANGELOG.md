@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2020-06-25
+
 ### Added
 - Add function to remove a specific or all domains from config with backup possibility (PR #28)
 - Add IPv6 capability (PR #25)
+
+### Changed
+- Improvement to force refresh every 7 days to refresh tokens (Issue #24)
 
 ## [0.0.6] - 2020-01-30
 
