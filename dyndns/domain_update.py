@@ -92,7 +92,7 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     ip = {}
     # skip any reference to previous values if there was no success so far (assure first update, prevent negative TTL)
     if 'last_success' in config[domain]:
-        # read existing ip for domain from config || from DNS if last check was less than 60 sec ago
+        # read existing ip for domain from config || from DNS if last check was more than 60 sec ago
         if int(time.time()) - config[domain]['last_success'] < 60:
             for proto in protocols:
                 ip[proto] = config[domain]['ip'][proto]
@@ -159,7 +159,13 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
                       .format(proto))
                 return None
 
-        if not ignore_previous_ip and proto in ip and str(ip[proto]) == str(public_ip[proto]):
+        # check if the previous and actual IP match
+        # force update by the flag
+        # force update every 7 days to prevent tokens from expire
+        if not ignore_previous_ip \
+                and int(time.time()) - config[domain]['last_success'] < 7 * 24 * 60 * 60 \
+                and proto in ip \
+                and str(ip[proto]) == str(public_ip[proto]):
             config[domain]['ip'][proto] = public_ip[proto]
             print("{} record up to date.".format(proto))
         else:
