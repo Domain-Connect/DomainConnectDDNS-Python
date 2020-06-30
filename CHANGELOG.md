@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.8] - 2020-06-30
 
 ### Changed
-- BUGFIX: exception on first run after initialization 
+- BUGFIX: exception on first run after initialization #30
 
 ## [0.0.7] - 2020-06-25
 
