@@ -164,7 +164,8 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
         # force update by the flag
         # force update every 7 days to prevent tokens from expire
         if not ignore_previous_ip \
-                and int(time.time()) - config[domain]['last_success'] < 7 * 24 * 60 * 60 \
+                and ('last_success' not in config[domain]
+                     or int(time.time()) - config[domain]['last_success'] < 7 * 24 * 60 * 60) \
                 and proto in ip \
                 and str(ip[proto]) == str(public_ip[proto]):
             config[domain]['ip'][proto] = public_ip[proto]
