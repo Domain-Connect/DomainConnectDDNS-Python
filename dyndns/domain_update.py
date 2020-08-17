@@ -27,6 +27,7 @@ def allowed_gai_family_ipv6():
     family = socket.AF_INET6
     return family
 
+
 # END Force requests to use IPv4 / IPv6
 
 
@@ -63,8 +64,8 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
     print("Read {} config.".format(domain))
 
     protocols = {
-        'IP':   {'version': 4, 'api': 'https://api.ipify.org', 'record_type': 'A',
-                 'protocol_enforce': allowed_gai_family_ipv4},
+        'IP': {'version': 4, 'api': 'https://api.ipify.org', 'record_type': 'A',
+               'protocol_enforce': allowed_gai_family_ipv4},
         'IPv4': {'version': 4, 'api': 'https://api.ipify.org', 'record_type': 'A',
                  'protocol_enforce': allowed_gai_family_ipv4},
         'IPv6': {'version': 6, 'api': 'https://api6.ipify.org', 'record_type': 'AAAA',
@@ -123,8 +124,8 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
 
         # get public ip
         try:
+            allowed_gai_family_orig = urllib3_cn.allowed_gai_family
             try:
-                allowed_gai_family_orig = urllib3_cn.allowed_gai_family
                 urllib3_cn.allowed_gai_family = protocols[proto]['protocol_enforce']
                 response = requests.get(protocols[proto]['api'], params={'format': 'json'})
             finally:
@@ -179,7 +180,6 @@ def main(domain, settings='settings.txt', ignore_previous_ip=False):
             new_settings = json.dumps(config, sort_keys=True, indent=1)
             settings_file.write(new_settings)
         return "All records up to date. No update required."
-
 
     # update DNS records
     success = True

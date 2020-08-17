@@ -1,11 +1,10 @@
 import json
 import os.path
-import sys
-
-import requests
-from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException
-from builtins import input
 import webbrowser
+from builtins import input
+
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException, \
+    NoDomainConnectRecordException, NoDomainConnectSettingsException
 
 dc = DomainConnect()
 
@@ -66,24 +65,26 @@ def main(domain, protocols, settings='settings.txt'):
     mode = 'r+'
     if not os.path.exists(settings):
         mode = 'w+'
-    with open(settings, mode) as settings_file:
-        try:
-            existing_config = json.load(settings_file)
-        except ValueError:
-            existing_config = {}
-        settings_file.seek(0)
-        settings_file.truncate()
-        existing_config.update({
-            domain: {
-                'provider_name': config.providerName,
-                'url_api': config.urlAPI,
-                'access_token': context.access_token,
-                'refresh_token': context.refresh_token,
-                'iat': context.iat,
-                'access_token_expires_in': context.access_token_expires_in,
-                'protocols': protocols
-            }
-        })
-        json.dump(existing_config, settings_file, sort_keys=True, indent=1)
-        return "Domain {} has been successfully configured.".format(domain)
-    return "Could not store domain config."
+    try:
+        with open(settings, mode) as settings_file:
+            try:
+                existing_config = json.load(settings_file)
+            except ValueError:
+                existing_config = {}
+            settings_file.seek(0)
+            settings_file.truncate()
+            existing_config.update({
+                domain: {
+                    'provider_name': config.providerName,
+                    'url_api': config.urlAPI,
+                    'access_token': context.access_token,
+                    'refresh_token': context.refresh_token,
+                    'iat': context.iat,
+                    'access_token_expires_in': context.access_token_expires_in,
+                    'protocols': protocols
+                }
+            })
+            json.dump(existing_config, settings_file, sort_keys=True, indent=1)
+            return "Domain {} has been successfully configured.".format(domain)
+    except Exception as e:
+        return "Could not store domain config: {}".format(e)

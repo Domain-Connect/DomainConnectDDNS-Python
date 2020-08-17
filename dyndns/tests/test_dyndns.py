@@ -1,11 +1,11 @@
 from __future__ import print_function
+
 import json
 import os
+import unittest
 from sys import stdin
 
-from domainconnect import DomainConnect
 from unittest2 import TestCase
-import unittest
 
 from dyndns import domain_setup, domain_update
 
@@ -23,8 +23,9 @@ class TestDomainDynDNS(TestCase):
         if os.path.exists('settings.txt'):
             os.remove('settings.txt')
 
-    def _setup_domain(self, domain):
-        domain_setup.main(domain)
+    @staticmethod
+    def _setup_domain(domain):
+        domain_setup.main(domain, ['ipv4'])
 
     @unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
     def test_setup_one_domain(self):
@@ -62,7 +63,7 @@ class TestDomainDynDNS(TestCase):
 
     @unittest.skipIf(not stdin.isatty(), "Skipping interactive test.")
     def test_update_domain(self):
-        domain_setup.main(self.host + self.domain)
+        domain_setup.main(self.host + self.domain, ['ipv4'])
         assert (os.path.exists('settings.txt')), 'Settings file missing'
         result = domain_update.main(self.host + self.domain)
         assert (result in ['A record up to date.', 'DNS record successfully updated.']), result

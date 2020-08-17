@@ -1,6 +1,5 @@
 import datetime
 import json
-import time
 
 
 def main(domain, settings='settings.txt'):
