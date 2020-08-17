@@ -43,4 +43,3 @@ def main(domain, settings='settings.txt', backup_file=None):
     with open(settings, "w") as settings_file:
         json.dump(config, settings_file, sort_keys=True, indent=1)
     return "Domain {} successfully removed.".format(domain)
-
