@@ -6,6 +6,10 @@ import requests
 from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException
 from builtins import input
 import webbrowser
+from builtins import input
+
+from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException, \
+    NoDomainConnectRecordException, NoDomainConnectSettingsException
 
 dc = DomainConnect()
 
