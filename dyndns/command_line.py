@@ -12,7 +12,8 @@ from dyndns import domain_remove
 def main():
     parser = argparse.ArgumentParser(description="Config domain for DynDNS")
 
-    parser.add_argument('action', choices=['setup', 'update', 'status', 'remove'], help="action to be performed on domain(s)")
+    parser.add_argument('action', choices=['setup', 'update', 'status', 'remove'], help="action to be performed on "
+                                                                                        "domain(s)")
     parser.add_argument('--config', type=str, default='settings.txt', help="config file path")
     parser.add_argument('--backup_file', default=None, help="backup file path for remove domain")
     parser.add_argument('--ignore-previous-ip', action='store_true', dest='ignore_previous_ip',
