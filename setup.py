@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 from setuptools import setup
+import dyndns
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name = 'domain-connect-dyndns',
-    version = '0.0.8',
+    version=dyndns.__version__,
     description = 'Python client library for Dynamic DNS using Domain Connect',
     license = 'MIT',
     long_description=long_description,
