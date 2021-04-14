@@ -7,6 +7,7 @@ from dyndns import domain_setup
 from dyndns import domain_update
 from dyndns import domain_status
 from dyndns import domain_remove
+from . import __version__
 
 
 def main():
@@ -14,6 +15,7 @@ def main():
 
     parser.add_argument('action', choices=['setup', 'update', 'status', 'remove'], help="action to be performed on "
                                                                                         "domain(s)")
+    parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
     parser.add_argument('--config', type=str, default='settings.txt', help="config file path")
     parser.add_argument('--backup_file', default=None, help="backup file path for remove domain")
     parser.add_argument('--ignore-previous-ip', action='store_true', dest='ignore_previous_ip',
@@ -34,6 +36,8 @@ def main():
     ignore_previous_ip = args.ignore_previous_ip
     ignore_ipv4 = "ipv4" not in args.protocols
     ignore_ipv6 = "ipv6" not in args.protocols
+
+    print('*** {} {} ***\n'.format(parser.prog, __version__))
 
     # validate domain
     if domain and not validators.domain(domain) is True:

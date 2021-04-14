@@ -16,7 +16,7 @@ class TestDomainDynDNS(TestCase):
         self.host = 'testing.'
         self.domain = 'connect.domains'
         self.expected_settings_keys = [
-            'access_token_expires_in', 'access_token', 'url_api', 'iat', 'provider_name', 'refresh_token'
+            'access_token_expires_in', 'access_token', 'url_api', 'protocols', 'iat', 'provider_name', 'refresh_token'
         ]
 
     def tearDown(self):
@@ -66,7 +66,7 @@ class TestDomainDynDNS(TestCase):
         domain_setup.main(self.host + self.domain, ['ipv4'])
         assert (os.path.exists('settings.txt')), 'Settings file missing'
         result = domain_update.main(self.host + self.domain)
-        assert (result in ['A record up to date.', 'DNS record successfully updated.']), result
+        assert (result in ['All records up to date. No update required.', 'DNS record successfully updated.']), result
 
 
 if __name__ == '__main__':
