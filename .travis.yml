@@ -1,10 +1,12 @@
 language: python
 python:
-- '3.6'
+- "2.7"
+- "3.6"
+- "3.7"
+- "3.8"
+- "3.9"
 install:
-- pip install -r requirements.txt
-- pip install pytest-cov
-- pip install unittest2
+  - pip install -r requirements-test.txt
 script: py.test --cov=dyndns --cov-config=.coveragerc
 deploy:
   provider: pypi
@@ -13,3 +15,4 @@ deploy:
     secure: WbgltkoM1BZQJeTJpm7J/Drvh8vm/L4QPm7+aOIP4Xx2Sw71ClAvPYH5I2Q7Vi6hJ2/5W5jCuxuUaqPYAYWYQLpGp5QwyN7FQVlBbcW3N4aCWDKJKrgn20W0caBIKPVTTh/ZuYEbO52nuccZKOqtiLe3UpbSbSNQO5iDI3aNRhggchZUQ/rIVjESYHOmtyW4dAvfHaoCCOirnP2FNuGyD4f9vlz5kXCLMlVXzma+KMzIwNxL6WJrrzUboPbd47MIDswHHrbGGGB6DzUJP2Bz7d2WRDXQahd+spnr7TDH03K3zu23dv1hYluAGx7AUukYLpeFExRkUohpDF+oqqVHfkft13GRKi2hOHLAvqru27T+lAcfwA4E/KnOy2+7bzCW8lyTegkspBVgEb2dOBH/mxGoV2h01bBBO8Ev7QEt+Xnf+EfCgNnKWBZi4LqRCOU+4P8taSIJt5h0JqpxbXCfEIJjCG+hUUkmEd6suVOxFzA90gWLVUQS3T/4yMRxpCwykrJ66a1IWTgVP6nFvTRJkJ+KuRjsr7rI3hR8L07fDmyjfWNnyaQ/3sBWCXkH2BEJnGU6Z099NmqQ/vlIiVAmRUGG5rASf5cAxh4DkVbmqu98nxC/ZqEKAb3kjZX+lPy20j1L0+1UUOch0RMgtIlF9ipZtKCeROnml6xsvJ9V3Oc=
   on:
     tags: true
+  skip_existing: true
