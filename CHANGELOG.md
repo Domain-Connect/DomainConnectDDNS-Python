@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 - BUGFIX: unhandled exception if not domainconnect record or no settings (Issue #32)
+- SETUP: upgraded dependencies and split of requirements.txt
 
 ## [0.0.8] - 2020-06-30
 

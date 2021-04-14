@@ -9,10 +9,13 @@ enum34==1.1.10
 future==0.18.2
 idna==2.10
 ipaddress==1.0.23
+linecache2==1.0.0
 publicsuffix==1.1.1
 publicsuffixlist==0.7.7
 pycparser==2.20
 requests==2.25.1
 six==1.15.0
+traceback2==1.4.0
+unittest2==1.1.0
 urllib3==1.26.4
 validators==0.14.2
