@@ -1,6 +1,10 @@
 import json
 import os.path
-import webbrowser
+try:
+    import webbrowser
+except ModuleNotFoundError:
+    pass
+import sys
 from builtins import input
 
 from domainconnect import DomainConnect, DomainConnectAsyncCredentials, TemplateNotSupportedException, \
@@ -43,8 +47,8 @@ def main(domain, protocols, settings='settings.txt'):
             params=params,
             redirect_uri='https://dynamicdns.domainconnect.org/ddnscode'
         )
-
-    webbrowser.open(context.asyncConsentUrl, autoraise=True)
+    if "webbrowser" in sys.modules:
+        webbrowser.open(context.asyncConsentUrl, autoraise=True)
     code = input("Please open\n{}\nand provide us the access code:".format(context.asyncConsentUrl))
 
     tries = 1
