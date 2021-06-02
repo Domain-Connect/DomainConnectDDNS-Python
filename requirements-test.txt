@@ -35,7 +35,7 @@ scandir==1.10.0
 six==1.15.0
 traceback2==1.4.0
 unittest2==1.1.0
-urllib3==1.26.4
+urllib3==1.26.5
 validators==0.14.2
 wcwidth==0.2.5
 zipp==1.2.0
