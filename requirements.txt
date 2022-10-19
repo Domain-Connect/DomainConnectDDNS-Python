@@ -6,7 +6,7 @@ decorator==4.4.2
 dnspython==1.16.0
 domain-connect==0.0.9
 enum34==1.1.10
-future==0.18.2
+future>=0.18.2
 idna==2.10
 ipaddress==1.0.23
 publicsuffix==1.1.1
