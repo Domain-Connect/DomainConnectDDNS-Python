@@ -51,3 +51,4 @@ Installation issues
 ===================
 
 - On some systems there might be no binary distribution of `cryptography` package. Additional installation stepsmay be necessary to build this package from the source code. Please refer to the package documentation: https://cryptography.io/en/latest/installation/
+- on FreeBSD the `cryptography` package can be installed with the following command `pkg install security/py-cryptography`
